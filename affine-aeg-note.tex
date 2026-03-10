@@ -1,0 +1,593 @@
+\documentclass[11pt,a4paper]{ctexart}
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\newtheorem{definition}{定义}[section]
+\newtheorem{proposition}[definition]{命题}
+\newtheorem{theorem}[definition]{定理}
+\newtheorem{corollary}[definition]{推论}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{注}
+\newtheorem{example}[definition]{例}
+
+\newcommand{\Aff}{\mathrm{Aff}}
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\Hol}{\mathrm{Hol}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\Ad}{\mathrm{Ad}}
+\newcommand{\diag}{\mathrm{diag}}
+
+\title{AEG 的仿射群升级：交换扇区、曲率分解与二维 Toy Model\\\large 理论札记（第一稿）}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+标量 AEG 的基本历史由两类步骤组成：加法步 $a\mapsto a+s$ 与乘法步 $a\mapsto e^{\Lambda}a$。它们的不交换性导致局部挠率 $\tau=s(e^{\Lambda}-1)$，连续极限则给出 $d\tau=\mu\lambda\,du\,dv$。然而，一旦系统进入多缺陷、多序参量、多通道耦合的情形，单一标量已不足以容纳协议依赖的丰富关系。本文提出：AEG 的自然升级并非直接把状态做成矩阵值，而是令状态仍取向量 $x\in V$，而把历史提升为仿射群 $\Aff(V)=\GL(V)\ltimes V$ 上的作用 $x\mapsto Mx+b$。在这一框架下，局部次序差自然分解为线性曲率项与平移曲率项；旧版标量 torsion 正是平移曲率在一维交换扇区上的退化。进一步地，在交换线性扇区中，可建立向量值的仿射 ACS（AACS）：
+\[
+\oint_{\partial\Sigma} e^{\Lambda}\,\dd A
+=
+\iint_{\Sigma} e^{\Lambda}\,\dd\Lambda\wedge\dd A,
+\]
+其中 $A$ 为累积修复向量，$\Lambda$ 为累积线性荷。最后，我们给出 ideal glass 的二维 toy model，说明为何不同协议可在几何缺陷 $a_G$ 与组合缺陷 $a_C$ 上产生相反排序，从而解释数值原型中 P3/P4 的分叉现象。
+\end{abstract}
+
+\section{引言：从标量 AEG 到仿射历史}
+
+标量 AEG 的离散基本步可写为
+\[
+a\mapsto a+s,
+\qquad
+ a\mapsto e^{\Lambda}a.
+\]
+两步复合的顺序差为
+\[
+e^{\Lambda}(a+s)-(e^{\Lambda}a+s)=s(e^{\Lambda}-1),
+\]
+这就是旧版 AEG 的局部 arithmetic torsion。在连续极限中，它对应接触形式
+\[
+\alpha=\dd a-(\mu\,\dd u+\lambda a\,\dd v),
+\]
+及其面元密度 $\mu\lambda\,\dd u\,\dd v$。
+
+但是，ideal-glass 一类问题同时包含至少三种结构：
+\begin{enumerate}[label=(\roman*)]
+    \item 多个缺陷通道（几何缺陷、接触图缺陷、非晶/晶序参数）；
+    \item 历史步骤之间的耦合与混合；
+    \item 图结构重排导致的非平凡次序效应。
+\end{enumerate}
+在这种情形下，更自然的升级并不是要求 ``向量自身既要会加又要会乘''，而是区分两层对象：
+\begin{itemize}
+    \item \textbf{状态层}：$x\in V$，记录当前多通道状态；
+    \item \textbf{历史层}：$(M,b)\in\Aff(V)$，记录线性放大/耦合与平移修复/注入。
+\end{itemize}
+
+本文的主张可压成一句话：
+\begin{quote}
+AEG 的多通道升级，应优先走向 ``向量状态上的仿射群历史''，而非直接走向 ``矩阵值状态''。矩阵应首先承担作用子，而不是首先承担值对象。
+\end{quote}
+
+\section{离散仿射 AEG：基本对象与求值公式}
+
+\subsection{仿射状态与仿射步}
+
+\begin{definition}[仿射状态]
+设 $V$ 为有限维实向量空间。一个系统状态记为
+\[
+x\in V.
+\]
+在 ideal-glass 的最小粗粒化模型中，可先取
+\[
+x=
+\begin{pmatrix}
+a_G\\ a_C
+\end{pmatrix}
+\quad\text{或}\quad
+x=
+\begin{pmatrix}
+a_G\\ a_C\\ q_6\\ \tau_{\mathrm{tr}}
+\end{pmatrix},
+\]
+其中 $a_G$ 是几何缺陷，$a_C$ 是组合缺陷，$q_6$ 与 $\tau_{\mathrm{tr}}$ 用来追踪局部六角序与平移序。
+\end{definition}
+
+\begin{definition}[仿射步]
+一个基本历史步定义为
+\[
+g=(M,b)\in \Aff(V)=\GL(V)\ltimes V,
+\]
+其对状态的作用为
+\[
+g\cdot x=Mx+b.
+\]
+仿射群的复合律为
+\[
+(M_2,b_2)\circ(M_1,b_1)=\bigl(M_2M_1,\,M_2b_1+b_2\bigr).
+\]
+\end{definition}
+
+这条复合律已经揭示出 AEG 的核心机制：\emph{后续的线性历史 $M_2$ 会重新加权前面的平移历史 $b_1$}。
+
+\begin{remark}[齐次矩阵表示]
+若引入齐次坐标
+\[
+\tilde x=
+\begin{pmatrix}
+x\\1
+\end{pmatrix},
+\qquad
+\widehat g=
+\begin{pmatrix}
+M & b\\
+0 & 1
+\end{pmatrix},
+\]
+则仿射作用可写成普通矩阵乘法
+\[
+\tilde x' = \widehat g\,\tilde x.
+\]
+因此，``矩阵加乘的完备性'' 并没有丢失，而是被更自然地安放在\textbf{历史算子层}。
+\end{remark}
+
+\subsection{离散路径与求值}
+
+设一条离散历史为
+\[
+\gamma=(g_n,\dots,g_1),\qquad g_j=(M_j,b_j).
+\]
+
+\begin{proposition}[离散仿射求值公式]
+对任意初态 $x_0\in V$，路径 $\gamma$ 的末态可写为
+\[
+\nu_{x_0}(\gamma)=M_\gamma x_0+B_\gamma,
+\]
+其中
+\[
+M_\gamma=M_nM_{n-1}\cdots M_1,
+\]
+\[
+B_\gamma=\sum_{j=1}^n M_nM_{n-1}\cdots M_{j+1}\,b_j.
+\]
+空积按恒等映射 $I$ 计。
+\end{proposition}
+
+\begin{proof}
+由递推关系
+\[
+x_k=M_kx_{k-1}+b_k
+\]
+逐步展开即可。前三步为
+\[
+x_1=M_1x_0+b_1,
+\]
+\[
+x_2=M_2M_1x_0+M_2b_1+b_2,
+\]
+\[
+x_3=M_3M_2M_1x_0+M_3M_2b_1+M_3b_2+b_3,
+\]
+归纳得到一般公式。
+\end{proof}
+
+\begin{remark}[交换线性扇区的指数写法]
+若所有 $M_j$ 都可写成
+\[
+M_j=e^{\Lambda_j},\qquad [\Lambda_i,\Lambda_j]=0,
+\]
+则
+\[
+M_\gamma=e^{\sum_{j=1}^n\Lambda_j},
+\qquad
+B_\gamma=\sum_{j=1}^n e^{\sum_{k>j}\Lambda_k}b_j.
+\]
+这正是标量 AEG 中 ``未来乘法历史重权过去加法历史'' 的多维版本。
+\end{remark}
+
+\section{局部不交换性与仿射曲率的离散原型}
+
+设两步历史为
+\[
+g_1=(M_1,b_1),\qquad g_2=(M_2,b_2).
+\]
+
+\begin{definition}[局部次序差]
+对任意状态 $x\in V$，定义
+\[
+\tau_{21}(x):=g_2g_1(x)-g_1g_2(x).
+\]
+\end{definition}
+
+\begin{proposition}[次序差分解公式]
+局部次序差可分解为
+\[
+\tau_{21}(x)
+=
+[M_2,M_1]x+(M_2-I)b_1-(M_1-I)b_2.
+\]
+\end{proposition}
+
+\begin{proof}
+直接展开：
+\[
+g_2g_1(x)=M_2M_1x+M_2b_1+b_2,
+\]
+\[
+g_1g_2(x)=M_1M_2x+M_1b_2+b_1,
+\]
+相减即得。
+\end{proof}
+
+这个公式给出两种不同来源的不交换性：
+\begin{align*}
+\tau^{\mathrm{lin}}(x)&=[M_2,M_1]x,\\
+\tau^{\mathrm{tr}}&=(M_2-I)b_1-(M_1-I)b_2.
+\end{align*}
+前者是\textbf{线性曲率项}，描述通道混合算子自身的不交换；后者是\textbf{平移曲率项}，描述 repair/injection 被后续线性历史放大、扭曲或投影。
+
+\begin{corollary}[标量 AEG 的一维退化]
+取 $V=\R$，并设
+\[
+g_{\mathrm{add}}=(1,s),\qquad g_{\mathrm{mul}}=(e^{\Lambda},0),
+\]
+则
+\[
+\tau=s(e^{\Lambda}-1).
+\]
+因此，旧版标量 torsion 正是仿射次序差在一维交换扇区上的退化。
+\end{corollary}
+
+\section{连续极限：仿射连接、曲率分解与旧版 torsion 的位置}
+
+标量 AEG 有一个漂亮的接触形式
+\[
+\alpha=\dd a-(\mu\,\dd u+\lambda a\,\dd v).
+\]
+然而在多通道情况下，更自然的对象不是一个标量 1-形式，而是一套 $V$-值 Pfaff 系统，等价地，一个仿射连接。
+
+\begin{definition}[仿射 AEG 连接]
+设基空间 $B$ 的局部坐标为 $\xi^a$。给定
+\[
+\Omega\in\Omega^1(B,\mathfrak{gl}(V)),
+\qquad
+\beta\in\Omega^1(B,V),
+\]
+定义仿射传播方程
+\[
+Dx:=\dd x-\Omega x-\beta=0.
+\]
+沿参数曲线 $\gamma(t)$，它写成
+\[
+\dot x=\Omega(\dot\gamma)x+\beta(\dot\gamma).
+\]
+\end{definition}
+
+若引入齐次变量
+\[
+\tilde x=
+\begin{pmatrix}
+x\\1
+\end{pmatrix},
+\qquad
+\widehat\Omega=
+\begin{pmatrix}
+\Omega & \beta\\
+0 & 0
+\end{pmatrix},
+\]
+则传播方程等价于
+\[
+\dd\tilde x=\widehat\Omega\tilde x.
+\]
+
+\begin{definition}[仿射曲率]
+定义齐次曲率
+\[
+\widehat F=\dd\widehat\Omega+\widehat\Omega\wedge\widehat\Omega
+=
+\begin{pmatrix}
+F & T\\
+0 & 0
+\end{pmatrix},
+\]
+其中
+\[
+F=\dd\Omega+\Omega\wedge\Omega\in\Omega^2(B,\mathfrak{gl}(V)),
+\]
+\[
+T=\dd\beta+\Omega\wedge\beta\in\Omega^2(B,V).
+\]
+\end{definition}
+
+这里 $F$ 是线性 holonomy 的曲率，而 $T$ 是平移曲率。对小矩形面元 $\square_{ab}$，局部次序差的二阶项满足
+\[
+\delta x=(F_{ab}x+T_{ab})\,\Delta\xi^a\Delta\xi^b+O(3).
+\]
+因此，旧版 AEG 中的 torsion 在仿射化后应重新理解为：\textbf{它是仿射曲率的平移分量 $T$，而不是全部曲率。}
+
+\begin{corollary}[旧版标量 AEG 的连续退化]
+取 $V=\R$，并令
+\[
+\Omega=\lambda\,\dd v,
+\qquad
+\beta=\mu\,\dd u.
+\]
+则
+\[
+F=\dd\Omega+\Omega\wedge\Omega=0,
+\]
+且
+\[
+T=\dd\beta+\Omega\wedge\beta
+=\mu\lambda\,\dd v\wedge\dd u,
+\]
+只差坐标取向符号即回到旧版 AEG 的面元密度 $\mu\lambda\,\dd u\,\dd v$。
+\end{corollary}
+
+\section{交换扇区与向量值 AACS}
+
+一旦线性部分不交换，全局理论自然转向路径有序指数
+\[
+\Hol_{\Gamma}=\mathcal P\exp\oint_{\Gamma}\widehat\Omega
+\in\GL(V\oplus\R).
+\]
+但是，在一个重要的第一层情形里，AEG 的全局面积理论仍然可以保留。
+
+\begin{definition}[交换线性扇区]
+若所有线性历史都落在某个可交换 Lie 子代数 $\mathfrak g_c\subset\mathfrak{gl}(V)$ 中，则定义交换扇区的累积坐标
+\[
+\Lambda\in\mathfrak g_c,
+\qquad
+A\in V,
+\]
+并称
+\[
+\mathcal A_{\mathrm{aff}}:=V\times\mathfrak g_c
+\]
+为仿射累积交换空间。
+\end{definition}
+
+在 $\mathcal A_{\mathrm{aff}}$ 上定义 $V$-值 1-形式
+\[
+\eta:=e^{\Lambda}\,\dd A.
+\]
+由于 $\Lambda$ 彼此可交换，矩阵微分满足通常乘积法则，故有
+\[
+\dd\eta=e^{\Lambda}\,\dd\Lambda\wedge\dd A.
+\]
+
+\begin{theorem}[向量值仿射 ACS, AACS]
+对任意有向曲面 $\Sigma\subset\mathcal A_{\mathrm{aff}}$，成立
+\[
+\oint_{\partial\Sigma}e^{\Lambda}\,\dd A
+=
+\iint_{\Sigma}e^{\Lambda}\,\dd\Lambda\wedge\dd A
+\in V.
+\]
+\end{theorem}
+
+\begin{proof}
+在交换扇区上，$e^{\Lambda}$ 作为矩阵函数不存在路径有序问题，于是 $\eta=e^{\Lambda}\,\dd A$ 是定义良好的 $V$-值 1-形式。对每个固定基向量分量应用通常的 Stokes 公式即可。
+\end{proof}
+
+\begin{remark}[离散解释]
+若离散路径由增量 $(\Delta\Lambda_j,\Delta A_j)$ 组成，则其末态为
+\[
+x_n=e^{\Lambda_\gamma}x_0+
+\sum_{j=1}^n e^{\Lambda_{>j}}\Delta A_j.
+\]
+因此，两条有相同端点的离散路径 $\gamma_1,\gamma_2$ 之间的差，正可视为包围区域上的向量值加权面积。旧版标量 ACS 是该公式在 $V=\R$ 时的退化。
+\end{remark}
+
+\begin{remark}[离开交换扇区以后]
+若 $\mathfrak g_c$ 不可交换，则 $e^{\Lambda}$ 的朴素写法不再全局有效。此时真正的全局对象应是路径有序 holonomy，AACS 只能在局部或近交换近似下保留。这是仿射 AEG 下一轮数学工作的核心难点之一。
+\end{remark}
+
+\section{ideal glass 的二维 Toy Model}
+
+我们现在把上述框架压到一个足以解释数值原型现象的二维 toy model。
+
+\subsection{状态变量}
+取
+\[
+x=
+\begin{pmatrix}
+a_G\\ a_C
+\end{pmatrix},
+\]
+其中：
+\begin{itemize}
+    \item $a_G$：几何缺陷，例如接触约束残差的均方根；
+    \item $a_C$：组合缺陷，例如离 fully triangulated 边界的配位/边密度残差。
+\end{itemize}
+理想边界的最简条件是
+\[
+a_G=0,\qquad a_C=0.
+\]
+若再考虑非晶限制，还应额外加上序参数约束，这里暂不纳入 toy model 的主变量。
+
+\subsection{三类基本历史步}
+
+\paragraph{(i) Scale 步} 取
+\[
+g_{\mathrm{sc}}=(M_{\mathrm{sc}},0),
+\qquad
+M_{\mathrm{sc}}(dv)=e^{L\,dv}.
+\]
+其中 $L\in\mathfrak{gl}_2(\R)$ 是生成元。若只看二次齐次的几何缺陷，则最自然的对角项为 $L_{11}\approx 2$；非对角项则负责 ``尺度变化如何把一个通道的修复投影到另一个通道''。
+
+\paragraph{(ii) Repair 步} 取
+\[
+g_{\mathrm{rep}}=(I,\,r\,du),
+\qquad
+r=
+\begin{pmatrix}
+-\rho_G\\ -\rho_C
+\end{pmatrix},
+\qquad
+\rho_G,\rho_C>0.
+\]
+它表示一次净缺陷修复。
+
+\paragraph{(iii) Triangulation / graph-rearrangement 步} 取
+\[
+g_{\mathrm{tri}}=(R,c),
+\]
+其中 $R$ 允许图结构重排导致的通道混合，$c$ 允许其伴随的净缺陷注入或修复。此步通常不能简化成纯平移。
+
+\subsection{P3/P4 分叉的最小解释}
+
+考虑只比较 scale 与 repair 两步。其局部次序差为
+\[
+\tau_{\mathrm{sc,rep}}=(M_{\mathrm{sc}}-I)r\,du.
+\]
+对小 $dv$，有
+\[
+\tau_{\mathrm{sc,rep}}\approx Lr\,du\,dv.
+\]
+现在取一个最小的非对角例子：
+\[
+L=
+\begin{pmatrix}
+2 & \kappa\\
+-\eta & 0
+\end{pmatrix},
+\qquad
+\kappa,\eta>0,
+\qquad
+r=
+\begin{pmatrix}
+-\rho_G\\ -\rho_C
+\end{pmatrix}.
+\]
+则
+\[
+Lr=
+\begin{pmatrix}
+-(2\rho_G+\kappa\rho_C)\\
+\eta\rho_G
+\end{pmatrix}.
+\]
+因此
+\[
+\tau_{\mathrm{sc,rep}}
+\approx
+\begin{pmatrix}
+-(2\rho_G+\kappa\rho_C)\\
+\eta\rho_G
+\end{pmatrix}du\,dv.
+\]
+这表明：
+\begin{itemize}
+    \item 第一个分量可以是负的，表示某一顺序更有利于压低几何缺陷 $a_G$；
+    \item 第二个分量可以是正的，表示同一顺序却可能恶化组合缺陷 $a_C$。
+\end{itemize}
+
+这正是二维 ideal-glass 原型中 ``P3/P4 在 $a_G$ 与 $a_C$ 上无法同向排序'' 的最小理论解释。其要点不是噪声，而是：\textbf{不同通道的次序差本来就允许有不同符号。}
+
+\begin{remark}[物理解释]
+负的下三角项 $L_{21}=-\eta$ 可理解为：尺度变化后，几何修复在随后的图结构/受力重排中，可能以相反符号投影到组合缺陷通道上。换言之，某类 ``几何上更顺'' 的修复，可能以牺牲接触图的某种稳定性为代价。
+\end{remark}
+
+\section{交换扇区中的全局 toy 模型}
+
+若进一步忽略 triangulation 步中的非交换线性重排，仅保留一个交换 scale 生成元 $L$，则可把路径写在
+\[
+(A,\Lambda)\in \R^2\otimes V \times \mathrm{span}\{L\}
+\]
+上，其中 $A$ 是累积 repair 向量，$\Lambda=\ell L$ 是累积线性荷。
+
+此时末态公式为
+\[
+x_{\mathrm{final}}=e^{\Lambda}x_0+\int_\gamma e^{\Lambda_{>t}}\,\dd A(t),
+\]
+而两条同端点路径的差满足向量值面积公式
+\[
+\Delta x
+=
+\oint e^{\Lambda}\,\dd A
+=
+\iint e^{\Lambda}\,\dd\Lambda\wedge\dd A.
+\]
+
+这说明：即使在二维 toy model 中，只要把状态提升为向量，协议历史的 ``面积'' 就不再是单个数，而是一个\textbf{向量值缺陷漂移}。其每个分量都对应一个不同通道的累积偏移。
+
+\section{命题、猜想与下一轮工作}
+
+\subsection{四条基础命题}
+
+\begin{proposition}[离散仿射求值]
+离散路径的末态由
+\[
+\nu_{x_0}(\gamma)=M_\gamma x_0+\sum_{j=1}^n M_{>j}b_j
+\]
+给出。
+\end{proposition}
+
+\begin{proposition}[局部次序差分解]
+两步历史的次序差为
+\[
+[M_2,M_1]x+(M_2-I)b_1-(M_1-I)b_2.
+\]
+\end{proposition}
+
+\begin{proposition}[连续极限中的仿射曲率]
+小回路的二阶 holonomy 由
+\[
+(F,T)=\bigl(\dd\Omega+\Omega\wedge\Omega,\;\dd\beta+\Omega\wedge\beta\bigr)
+\]
+控制。
+\end{proposition}
+
+\begin{proposition}[交换扇区的向量值 AACS]
+在线性部分可交换时，有
+\[
+\oint e^{\Lambda}\,\dd A
+=
+\iint e^{\Lambda}\,\dd\Lambda\wedge\dd A.
+\]
+\end{proposition}
+
+\subsection{三条工作猜想}
+
+\begin{proposition}[工作猜想 1：二维缺陷的必要性]
+ideal-glass 的最小协议几何至少需要二维状态 $(a_G,a_C)$；任何单标量缺陷都无法同时解释 ``几何缺陷改进'' 与 ``组合缺陷恶化'' 并存的顺序效应。
+\end{proposition}
+
+\begin{proposition}[工作猜想 2：预理想边界与理想边界]
+当前数值原型更接近 ``预理想致密化区间''：$a_G$ 与 $a_C$ 都下降，但尚未逼近 $(0,0)$。真正的 ideal 边界应是二维缺陷同时塌缩的边界；非晶性则需由额外序参数单独约束。
+\end{proposition}
+
+\begin{proposition}[工作猜想 3：非交换扇区中的图重排是关键]
+一旦 triangulation / graph-rearrangement 被视为 $(R,c)$ 型仿射步，则 ideal-glass 的核心困难将不再是简单的加-乘顺序，而是 ``线性重排 $R$ 与 repair/scale 的非交换''。因此，非交换 holonomy 很可能是 fully triangulated protocol 的真正几何载体。
+\end{proposition}
+
+\section{结语}
+
+本文提出了 AEG 的仿射群升级：
+\begin{itemize}
+    \item 状态仍取向量 $x\in V$；
+    \item 历史步取仿射变换 $(M,b)$；
+    \item 局部不交换性分解为线性曲率 $F$ 与平移曲率 $T$；
+    \item 旧版标量 torsion 是 $T$ 在一维交换扇区上的退化；
+    \item 在线性可交换扇区上，可以建立向量值的仿射 ACS；
+    \item 对 ideal glass，二维 toy model 已足以解释 P3/P4 在 $a_G$ 与 $a_C$ 上的相反排序。
+\end{itemize}
+
+因此，AEG 的下一步不应是直接跳向 ``矩阵值热力学''，而应先完成以下三层：
+\begin{enumerate}[label=(\arabic*)]
+    \item 仿射离散求值与局部次序差的严格化；
+    \item 交换扇区中的 AACS 与其向量值面积理论；
+    \item 非交换 graph-rearrangement 的 holonomy 理论。
+\end{enumerate}
+
+从 ideal-glass 的角度看，这一路线的意义在于：它把 ``缺陷--尺度--图重排'' 的历史统一到一个仿射几何框架中，从而为 fully triangulated ideal packing 的协议几何提供了比单标量 AEG 更合适的语言。
+
+\end{document}

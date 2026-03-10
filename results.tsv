@@ -1,0 +1,21 @@
+commit	val_bpb	memory_gb	status	description
+101521e	1.848964	0.0	keep	baseline no-MLP variant
+86e189d	1.720242	0.0	keep	make OptAEGV3 a residual delta branch
+3d89b48	0.000000	0.0	crash	4 attention heads timed out over 10 minutes
+1f6b963	1.721512	0.0	discard	grouped-query attention with 1 kv head
+8f3b568	0.000000	0.0	crash	5-layer GQA variant aborted early as clearly worse
+1fe56a1	1.722030	0.0	discard	GQA with value embeddings in every layer
+dc891f5	1.725197	0.0	discard	full-state value-embedding gate
+9d2a096	1.740465	0.0	discard	add affine coupling term to OptAEGV3
+eaf4f0b	1.724713	0.0	discard	exact exponential dilation in OptAEGV3
+c659b89	1.755270	0.0	discard	exact exponential affine ordering with translated branch
+f5f2cf9	1.710904	0.0	keep	value embeddings in every layer without GQA
+ea2ba9f	1.702055	0.0	keep	mixed local-global window pattern SL
+cde194c	1.695595	0.0	keep	mixed local-global window pattern SSL
+ba2df1b	1.712597	0.0	discard	local-heavy window pattern SSSL
+b191c66	0.000000	0.0	crash	channel-wise AEG parameters on SSL backbone
+6960f6c	0.000000	0.0	crash	low-rank affine lift on SSL backbone
+2050a32	0.000000	0.0	crash	group-wise AEG parameters on SSL backbone
+d181750	1.676265	0.0	keep	grouped block-affine AEG step on SSL backbone
+ca94391	1.685638	0.0	discard	group-mixed affine history step
+5c4ac55	1.709896	0.0	discard	split affine translation and linear statistics

@@ -21,3 +21,6 @@ dev/
 .auto_loop.lock
 auto_loop_state.json
 auto_loop_recommendations.md
+.idea/
+run.log
+aeg-paper.pdf
